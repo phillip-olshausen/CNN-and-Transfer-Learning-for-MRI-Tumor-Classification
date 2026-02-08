@@ -1,274 +1,235 @@
-
+[README_portfolio.md](https://github.com/user-attachments/files/25171015/README_portfolio.md)
 # CNN Image Classification – Statistical Learning (SoSe 2025)
 
 **Authors:** Phillip Olshausen  
 **Course:** Data Science (Sommersemester 2025)  
 **Type:** University project 
 
----
+This repository contains a **fully documented Jupyter notebook** that implements and compares:
+1) a **custom CNN trained from scratch**, and  
+2) a **transfer learning model (EfficientNetB0)**
 
-## 1. Project Motivation
-
-This project implements a complete **image classification pipeline using Convolutional Neural Networks (CNNs)**.  
-The primary goal is not only to achieve good predictive performance, but to **demonstrate a rigorous statistical learning workflow**:
-
-- systematic data preprocessing  
-- transparent model design  
-- careful hyperparameter control  
-- stratified cross-validation for robust performance estimation  
-- comparison of different training strategies  
-- critical evaluation of generalization and overfitting  
-
-The notebook is intentionally written in a **clear, step-by-step, educational style**, making it suitable both for academic assessment and as a **portfolio project** showcasing applied machine learning skills.
+Both approaches are evaluated with **robust metrics, learning curves, and error analysis** (confusion matrices + misclassification inspection).  
+> ✅ A detailed, block-by-block explanation of the full workflow is included directly inside the notebook.
 
 ---
 
-## 2. Dataset Assumptions & Structure
+## What this project does (in one sentence)
 
-The project assumes an **image dataset organized by class folders**, e.g.:
+Given a folder-structured image dataset, we build a reproducible pipeline to **train, validate, and test** a CNN classifier, then **benchmark it against transfer learning** to analyze generalization and failure cases.
 
-```
-dataset/
+---
+
+## Key Features
+
+- **Two modeling paradigms**
+  - **Custom CNN** (from scratch)
+  - **Transfer Learning with EfficientNetB0** (pretrained backbone + custom head)
+- **Clean preprocessing pipeline**
+  - resizing, grayscale handling (Section 1)
+  - **contrast enhancement / histogram equalization** visualization (Section 2)
+  - normalization to stable numeric ranges
+- **Robust evaluation**
+  - stratified splits and **Stratified K-Fold Cross-Validation** (Section 1)
+  - hold-out validation monitoring for the final run
+  - test-set evaluation
+- **Interpretability & error analysis**
+  - learning curves (loss/accuracy)
+  - **confusion matrices**
+  - most frequent misclassifications
+  - visual inspection of misclassified examples
+  - confidence inspection (probability gaps)
+- **Extra (portfolio-friendly)**
+  - interactive single-image prediction demo for the transfer learning model
+
+---
+
+## Repository Contents
+
+- **Notebook:** `LiviaKastrati_PhillipOlshausen_StatLearningSoSe2025.ipynb`  
+  The complete project implementation including explanations, figures, training logs, and evaluation.
+
+> Tip for a professional repo: place the notebook under `notebooks/` and keep results plots under `figures/`.
+
+---
+
+## Dataset Assumptions
+
+The notebook expects an image dataset arranged by **class folders**, typically:
+
+```text
+data/
 ├── train/
-│   ├── class_1/
-│   ├── class_2/
-│   └── class_k/
+│   ├── class_A/
+│   ├── class_B/
+│   └── ...
 └── test/
-    ├── class_1/
-    ├── class_2/
-    └── class_k/
+    ├── class_A/
+    ├── class_B/
+    └── ...
 ```
 
-Each class folder contains grayscale or RGB images belonging to the same category.
+- **Class names** are auto-detected from folder names.
+- The notebook prints **class counts** to detect imbalance early.
+- Images are resized to a fixed shape defined in the hyperparameters.
 
-Key assumptions:
-- Classes are mutually exclusive  
-- Images may vary in size and are resized during preprocessing  
-- Class imbalance is possible and explicitly checked  
-
----
-
-## 3. Notebook Structure (Detailed Walkthrough)
-
-### Section 1: CNN Model Pipeline
+> Note: The dataset itself is typically not included in public repos due to size/licensing.  
+> Add `data/` to `.gitignore` and document download instructions in `data/README.md`.
 
 ---
 
-### Block 1 – Environment Setup & Library Imports
+## Notebook Walkthrough (Complete)
 
-**Purpose:**  
-Prepare a clean and reproducible environment.
+## Section 1 — Custom CNN Model (from scratch)
 
-**Key points:**
-- TensorFlow logging is restricted to warnings/errors to avoid clutter
-- All required libraries are imported in one place:
-  - TensorFlow / Keras for modeling
-  - NumPy for numerical operations
-  - scikit-learn for data splitting and cross-validation
-  - matplotlib for visualization
+This section implements a classic statistical learning workflow with a CNN baseline and rigorous evaluation.
 
-This block ensures that the rest of the notebook runs deterministically and transparently.
+### Block 1 — Environment Setup & Imports
+- Configure TensorFlow logging
+- Import ML + plotting + evaluation dependencies
 
----
+### Block 2 — Data Paths & Class Distribution
+- Set dataset directories
+- Auto-detect classes
+- Print per-class sample counts (train/test)
 
-### Block 2 – Data Paths & Class Distribution
+### Block 3 — Hyperparameter Setup
+- Image size, batch size, epochs
+- CV folds (Stratified K-Fold)
+- Seeds / reproducibility settings where relevant
 
-**Purpose:**  
-Understand the dataset before modeling.
+### Block 4 — Sample Image Visualization
+- Display one example per class (sanity check)
 
-**What happens:**
-- Training and test directory paths are defined
-- Class labels are automatically inferred from directory names
-- The number of images per class is counted and printed
+### Block 5 — Data Loading & Normalization
+- Load all images into arrays
+- Convert to grayscale (if configured)
+- Normalize pixel values to **[0, 1]**
+- One-hot encode labels
 
-**Why this matters:**
-- Reveals potential **class imbalance**
-- Prevents silent data leakage
-- Ensures the label encoding is consistent and reproducible
+### Block 6 — Original vs Normalized Comparison
+- Visual explanation of why normalization improves training stability
 
----
+### Block 7 — CNN Definition + Stratified K-Fold Cross-Validation
+- Define a CNN architecture (conv → pooling → dense → softmax)
+- Evaluate with **stratified folds** for robust performance estimates
+- Report mean ± std validation accuracy across folds
 
-### Block 3 – Hyperparameter Setup
+### Block 8 — Full Training (No Hold-Out)
+- Train on full training set without validation monitoring
+- Baseline to compare against validation-monitored training
 
-**Purpose:**  
-Centralize all experimental settings.
+### Block 9 — Final Training with Hold-Out Validation
+- Stratified train/val split
+- Train a fresh CNN
+- Track validation curves for overfitting diagnostics
 
-**Defined parameters include:**
-- Image dimensions (height × width)
-- Batch size
-- Number of epochs
-- Number of folds for cross-validation
-
-**Why this matters:**
-- Makes experiments easy to reproduce
-- Allows controlled comparison of model variants
-- Avoids hard-coded “magic numbers” scattered across the notebook
-
----
-
-### Block 4 – Sample Image Visualization
-
-**Purpose:**  
-Perform a **visual sanity check** on the data.
-
-**What happens:**
-- One representative image per class is loaded
-- Images are resized and converted to grayscale
-- Samples are displayed side by side with class labels
-
-**Why this matters:**
-- Confirms correct data loading
-- Reveals obvious labeling or preprocessing errors early
-- Builds intuition about intra- and inter-class variability
+### Blocks 10–17 — Evaluation + Diagnostics
+- Test set evaluation
+- Metrics reporting and overfitting checks
+- Learning curves (accuracy/loss)
+- Confusion matrix
+- Misclassification patterns and examples
+- Confidence inspection for wrong predictions
 
 ---
 
-### Block 5 – Data Loading & Normalization
+## Section 2 — Transfer Learning Benchmark (EfficientNetB0)
 
-**Purpose:**  
-Transform raw image files into model-ready tensors.
+This section repeats the pipeline with a modern pretrained backbone and directly compares it to the custom CNN.
 
-**Steps:**
-- Load images from disk
-- Resize to target dimensions
-- Convert to grayscale
-- Normalize pixel values to the range \[0, 1\]
-- One-hot encode class labels
+### Block 1 — Imports & Settings
+- Centralized configuration for the TL experiment
 
-**Output:**
-- NumPy arrays for training and test data
-- Consistent tensor shapes suitable for CNN input
+### Block 2 — Auto-detect Class Names
+- Ensures label mapping is identical to folder structure
 
----
+### Block 3 — Count & List Example Files
+- Quickly verify data integrity per class
 
-### Block 6 – Original vs. Normalized Image Comparison
+### Block 4 — Visualization: Original → Equalized
+- Shows preprocessing/contrast enhancement effects (useful for model robustness)
 
-**Purpose:**  
-Illustrate the effect of normalization.
+### Block 5 — Load & Preprocess Functions
+- Unified preprocessing for both models to ensure a fair comparison
 
-**What is shown:**
-- Raw grayscale image
-- Corresponding normalized version
+### Block 6 — Load Train & Test Data
+- Load full train/test arrays with consistent processing
 
-**Why this matters:**
-- Demonstrates numerically stable input scaling
-- Helps explain faster and more stable CNN training
-- Useful for educational and presentation purposes
+### Block 7 — Validation Split
+- Separate hold-out validation set for monitoring (transfer learning training stability)
 
----
+### Block 8A — Build Custom CNN (baseline)
+- Rebuild a scratch CNN as the comparison baseline within this section
 
-### Block 7 – CNN Definition & Stratified k-Fold Cross-Validation
+### Block 8B — Build Transfer Learning Model (EfficientNetB0)
+- Load EfficientNetB0 pretrained weights
+- Attach a classification head
+- Train with fine-tuning strategy as configured
 
-**Purpose:**  
-Estimate generalization performance robustly.
+### Block 9 — Train Both Models
+- Train baseline CNN and TL model under comparable conditions
+- Store training history for curve plotting
 
-**Key components:**
-- CNN architecture definition (convolution → pooling → dense → softmax)
-- Stratified k-fold split on training data
-- Separate model instantiation for each fold
-- Recording best validation accuracy per fold
+### Block 10 — Evaluate on Test Set
+- Report test performance for both models
 
-**Why stratification matters:**
-- Preserves class proportions in each fold
-- Reduces variance in performance estimates
-- Particularly important for imbalanced datasets
+### Block 11 — Plot Training Curves
+- Compare convergence and generalization dynamics
 
-**Outcome:**
-- Mean validation accuracy
-- Standard deviation across folds
+### Block 12 — Confusion Matrices
+- Side-by-side confusion matrices to interpret where each model fails
 
-This block provides the **statistically most reliable performance estimate** in the notebook.
+### Block 13 — Misclassified Examples
+- Visualize wrong predictions for qualitative insights
+
+### Block 14 (Extra) — Interactive Single Image Prediction (TL model)
+- User-facing inference demo: input an image → get predicted class + confidence
 
 ---
 
-### Block 8 – Full Training Without Hold-Out Validation
+## Results (How to present this on GitHub)
 
-**Purpose:**  
-Establish a baseline training strategy.
+In your GitHub portfolio, it helps to include a short, visual summary in the README:
 
-**What happens:**
-- Model is trained on the full training dataset
-- No validation split is used during training
-- Final evaluation is performed on the test set
+- Cross-validation accuracy (Section 1)
+- Final test accuracy (CNN vs EfficientNetB0)
+- One confusion matrix image
+- A few representative misclassifications
 
-**Why include this:**
-- Shows the risk of overfitting when no validation monitoring is used
-- Serves as a comparison point for the next block
-
----
-
-### Block 9 – Final Model Training With Hold-Out Validation
-
-**Purpose:**  
-Train the final model under best-practice conditions.
-
-**Key aspects:**
-- Fresh model initialization
-- Stratified train/validation split
-- Validation metrics monitored each epoch
-- Learning curves plotted
-
-**Why this matters:**
-- Prevents overfitting
-- Enables early diagnostics of under/over-parameterization
-- Produces the final model suitable for reporting
+**Suggested placeholders (fill with your numbers):**
+- **Custom CNN:** CV acc ≈ `__` (mean ± std), Test acc = `__`
+- **EfficientNetB0 TL:** Test acc = `__` (and/or val acc = `__`)
 
 ---
 
-## 4. Model Architecture (Conceptual)
+## How to Run (Reproducibility)
 
-The CNN follows a standard image-classification design:
-
-- **Convolutional layers:** learn local spatial features  
-- **Pooling layers:** reduce spatial resolution and variance  
-- **Dense layers:** combine high-level features  
-- **Softmax output:** produce class probabilities  
-
-The architecture balances expressive power with overfitting control, making it appropriate for small to medium-sized datasets.
-
----
-
-## 5. Evaluation Strategy
-
-The project evaluates performance using:
-- Cross-validated validation accuracy (mean ± standard deviation)
-- Final test accuracy
-- Training and validation learning curves
-
-This combination allows:
-- Robust performance estimation
-- Detection of overfitting
-- Transparent comparison of training strategies
-
----
-
-## 6. Reproducibility
-
-To reproduce results:
-1. Clone the repository
+1. Create/activate an environment
 2. Install dependencies
-3. Adjust dataset paths in Block 2
+3. Set dataset paths
 4. Run the notebook top-to-bottom
 
-All randomness is controlled where applicable, and hyperparameters are explicitly documented.
+### Dependencies
+- Python 3.x
+- TensorFlow / Keras
+- NumPy, scikit-learn, matplotlib
+- (Optional) OpenCV / image utilities depending on your preprocessing blocks
+
+### Minimal setup
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## 7. Intended Audience
 
-This repository is suitable for:
-- University coursework evaluation
-- Machine learning portfolio review
-- Demonstrating applied CNN workflows
-- Readers seeking an interpretable, well-documented ML project
+
+## License / Notes
+This project is intended for educational and portfolio use. Dataset inclusion depends on the original data source and licensing.
 
 ---
 
-## 8. License & Disclaimer
-
-This project is intended for **educational and portfolio use**.  
-Dataset licensing depends on the original data source and is not included in this repository.
-
----
-
-*Statistical Learning – Sommersemester 2025*
+**Notebook:**  
+✅ Contains full documented explanations, code blocks, and results.
+ADME_portfolio.md…]()
