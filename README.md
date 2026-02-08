@@ -1,4 +1,4 @@
-[README (4).md](https://github.com/user-attachments/files/25050081/README.4.md)
+
 # CNN Image Classification – Statistical Learning (SoSe 2025)
 
 **Authors:** Phillip Olshausen  
