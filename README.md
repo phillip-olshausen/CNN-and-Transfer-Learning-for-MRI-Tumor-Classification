@@ -2,8 +2,8 @@
 # CNN Image Classification – Statistical Learning (SoSe 2025)
 
 **Authors:** Phillip Olshausen  
-**Course:** Statistical Learning (Sommersemester 2025)  
-**Type:** University project / GitHub portfolio submission
+**Course:** Data Science (Sommersemester 2025)  
+**Type:** University project 
 
 ---
 
