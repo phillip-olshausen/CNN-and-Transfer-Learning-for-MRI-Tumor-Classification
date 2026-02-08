@@ -1,7 +1,7 @@
 [README (4).md](https://github.com/user-attachments/files/25050081/README.4.md)
 # CNN Image Classification – Statistical Learning (SoSe 2025)
 
-**Authors:** Livia Kastrati, Phillip Olshausen  
+**Authors:** Phillip Olshausen  
 **Course:** Statistical Learning (Sommersemester 2025)  
 **Type:** University project / GitHub portfolio submission
 
