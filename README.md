@@ -188,20 +188,7 @@ This section repeats the pipeline with a modern pretrained backbone and directly
 
 ---
 
-## Results (How to present this on GitHub)
 
-In your GitHub portfolio, it helps to include a short, visual summary in the README:
-
-- Cross-validation accuracy (Section 1)
-- Final test accuracy (CNN vs EfficientNetB0)
-- One confusion matrix image
-- A few representative misclassifications
-
-**Suggested placeholders (fill with your numbers):**
-- **Custom CNN:** CV acc ≈ `__` (mean ± std), Test acc = `__`
-- **EfficientNetB0 TL:** Test acc = `__` (and/or val acc = `__`)
-
----
 
 ## How to Run (Reproducibility)
 
